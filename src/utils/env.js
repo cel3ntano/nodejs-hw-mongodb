@@ -1,6 +1,6 @@
 import dotenv from 'dotenv';
-dotenv.config({ path: '../.env' });
-// dotenv.config();
+// dotenv.config({ path: '../.env' });
+dotenv.config();
 
 export function env(name, defaultValue) {
   const value = process.env[name];

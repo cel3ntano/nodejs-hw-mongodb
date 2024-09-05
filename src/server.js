@@ -1,6 +1,7 @@
 import express from 'express';
 import { env } from './utils/env.js';
 import pino from 'pino-http';
+import cors from 'cors';
 
 const PORT = Number(env('PORT', '3000'));
 
@@ -12,6 +13,8 @@ export default function setupServer() {
       transport: { target: 'pino-pretty' },
     }),
   );
+
+  app.use(cors());
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);

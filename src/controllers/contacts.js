@@ -1,5 +1,9 @@
 import createHttpError from 'http-errors';
-import { getAllContacts, getContactById } from '../services/contacts.js';
+import {
+  createContact,
+  getAllContacts,
+  getContactById,
+} from '../services/contacts.js';
 
 export const getContactsController = async (req, res) => {
   const contacts = await getAllContacts();
@@ -21,5 +25,22 @@ export const getContactByIdController = async (req, res) => {
     status: 200,
     message: `Successfully found contact with id ${contactId}!`,
     data: contact,
+  });
+};
+
+export const createContactController = async (req, res) => {
+  const { name, phoneNumber, contactType, email, isFavourite } = req.body;
+  if (!name || !phoneNumber || !contactType) {
+    throw createHttpError(
+      400,
+      'name, phoneNumber, and contactType are required fields',
+    );
+  }
+
+  const createdContact = await createContact(req.body);
+  res.status(201).json({
+    status: 201,
+    message: 'Successfully created a contact!',
+    data: createdContact,
   });
 };

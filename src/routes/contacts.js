@@ -11,9 +11,9 @@ import {
 const router = Router();
 
 router.get('/', ctrlWrapper(getContactsController));
-router.get('//:contactId', ctrlWrapper(getContactByIdController));
+router.get('/:contactId', ctrlWrapper(getContactByIdController));
 router.delete('/:contactId', ctrlWrapper(deleteContactController));
 router.post('/', ctrlWrapper(createContactController));
-router.patch('//:contactId', ctrlWrapper(patchContactController));
+router.patch('/:contactId', ctrlWrapper(patchContactController));
 
 export default router;

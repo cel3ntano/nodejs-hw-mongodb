@@ -41,3 +41,11 @@ export const updateContact = async (id, payload, options = {}) => {
   }
   return updatedContactRawData.value;
 };
+
+export const deleteContactById = async (id) => {
+  const removedContact = await ContactsCollection.findByIdAndDelete(id);
+  if (!removedContact) {
+    throw createHttpError(404, 'Contact not found');
+  }
+  return removedContact;
+};

@@ -1,6 +1,7 @@
 // import createHttpError from 'http-errors';
 import {
   createContact,
+  deleteContactById,
   getAllContacts,
   getContactById,
   updateContact,
@@ -45,4 +46,10 @@ export const patchContactController = async (req, res) => {
     message: 'Successfully patched a contact!',
     data: updatedContact,
   });
+};
+
+export const deleteContactController = async (req, res) => {
+  const { contactId } = req.params;
+  await deleteContactById(contactId);
+  res.status(204).send();
 };

@@ -11,7 +11,7 @@ export const deleteContactById = (id) =>
 export const createContact = (contactData) =>
   ContactsCollection.create(contactData);
 
-export const updateContact = async (id, payload, options = {}) =>
+export const updateContact = (id, payload, options = {}) =>
   ContactsCollection.findByIdAndUpdate(id, payload, {
     new: true,
     includeResultMetadata: true,

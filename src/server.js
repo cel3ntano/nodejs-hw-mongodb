@@ -1,6 +1,6 @@
 import express from 'express';
 import env from './utils/env.js';
-import pino from 'pino-http';
+// import pino from 'pino-http';
 import cors from 'cors';
 import contactsRouter from './routes/contacts.js';
 import { notFoundHandler } from './middlewares/notFoundHandler.js';
@@ -11,11 +11,11 @@ const PORT = Number(env('PORT', '3000'));
 export default function setupServer() {
   const app = express();
 
-  app.use(
-    pino({
-      transport: { target: 'pino-pretty' },
-    }),
-  );
+  // app.use(
+  //   pino({
+  //     transport: { target: 'pino-pretty' },
+  //   }),
+  // );
 
   app.use(cors());
   app.use(express.json());

@@ -9,9 +9,8 @@ export const getAllContacts = async ({ page, perPage }) => {
   ]);
 
   return {
-    totalItems,
     contacts,
-    ...createPaginationData(totalItems, page, perPage),
+    ...createPaginationData(page, perPage, totalItems),
   };
 };
 

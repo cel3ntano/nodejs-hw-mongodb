@@ -9,8 +9,10 @@ import {
 } from '../controllers/contacts.js';
 import { isValidId } from '../middlewares/isValidId.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import { createContactValidationSchema } from '../validation/createContactValidationSchema.js';
-import { updateContactValidationSchema } from '../validation/updateContactValidationSchema.js';
+import {
+  createContactValidationSchema,
+  updateContactValidationSchema,
+} from '../validation/contact-schemas.js';
 
 const router = Router();
 

@@ -14,21 +14,21 @@ import {
   updateContactValidationSchema,
 } from '../validation/contact-schemas.js';
 
-const router = Router();
+const contactsRouter = Router();
 
-router.use('/:contactId', isValidId('contactId'));
-router.get('/', ctrlWrapper(getContactsController));
-router.get('/:contactId', ctrlWrapper(getContactByIdController));
-router.delete('/:contactId', ctrlWrapper(deleteContactController));
-router.post(
+contactsRouter.use('/:contactId', isValidId('contactId'));
+contactsRouter.get('/', ctrlWrapper(getContactsController));
+contactsRouter.get('/:contactId', ctrlWrapper(getContactByIdController));
+contactsRouter.delete('/:contactId', ctrlWrapper(deleteContactController));
+contactsRouter.post(
   '/',
   validateBody(createContactValidationSchema),
   ctrlWrapper(createContactController),
 );
-router.patch(
+contactsRouter.patch(
   '/:contactId',
   validateBody(updateContactValidationSchema),
   ctrlWrapper(patchContactController),
 );
 
-export default router;
+export default contactsRouter;

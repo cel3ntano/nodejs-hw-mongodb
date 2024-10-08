@@ -9,6 +9,7 @@ import {
   updateContact,
 } from '../services/contacts.js';
 import { parseFilterParams } from '../utils/parseFilterParams.js';
+import { findSession, refreshSession } from '../services/auth.js';
 
 export const getContactsController = async (req, res) => {
   const { page, perPage } = parsePaginationParams(req.query);

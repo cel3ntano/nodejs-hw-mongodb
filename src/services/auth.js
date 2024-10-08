@@ -7,9 +7,22 @@ import {
   refreshTokenValidityTime,
 } from '../constants/users-constants.js';
 
+const createSession = () => {
+  const accessToken = randomBytes(30).toString('base64');
+  const refreshToken = randomBytes(30).toString('base64');
+  const accessTokenValidUntil = Date.now() + accessTokenValidityTime;
+  const refreshTokenValidUntil = Date.now() + refreshTokenValidityTime;
+
+  return {
+    accessToken,
+    refreshToken,
+    accessTokenValidUntil,
+    refreshTokenValidUntil,
+  };
+};
+
 export const findUser = (filter) => User.findOne(filter);
-export const findSessionByAccessToken = (accessToken) =>
-  Session.findOne({ accessToken });
+export const findSession = (filter) => Session.findOne(filter);
 
 export const registerUser = async (userRegistrationData) => {
   const { password } = userRegistrationData;
@@ -19,16 +32,19 @@ export const registerUser = async (userRegistrationData) => {
 
 export const loginUser = async (userId) => {
   await Session.deleteOne({ userId });
-  const accessToken = randomBytes(30).toString('base64');
-  const refreshToken = randomBytes(30).toString('base64');
-  const accessTokenValidUntil = Date.now() + accessTokenValidityTime;
-  const refreshTokenValidUntil = Date.now() + refreshTokenValidityTime;
-
+  const newSession = createSession();
   return Session.create({
     userId,
-    accessToken,
-    refreshToken,
-    accessTokenValidUntil,
-    refreshTokenValidUntil,
+    ...newSession,
+  });
+};
+
+export const refreshSession = async (refreshToken) => {
+  const oldSession = await Session.findOneAndDelete(refreshToken);
+
+  const newSession = createSession();
+  return Session.create({
+    userId: oldSession.userId,
+    ...newSession,
   });
 };

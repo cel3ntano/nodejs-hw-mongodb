@@ -1,7 +1,20 @@
 import createHttpError from 'http-errors';
-import { findUser, loginUser, registerUser } from '../services/auth.js';
-import { refreshTokenValidityTime } from '../constants/users-constants.js';
+import {
+  findSession,
+  findUser,
+  loginUser,
+  refreshSession,
+  registerUser,
+} from '../services/auth.js';
 import bcrypt from 'bcrypt';
+import { refreshTokenValidityTime } from '../constants/users-constants.js';
+
+const setSessionCookies = (res, session) => {
+  res.cookie('refreshToken', session.refreshToken, {
+    httpOnly: true,
+    expires: new Date(Date.now() + refreshTokenValidityTime),
+  });
+};
 
 export const registerController = async (req, res) => {
   const { email } = req.body;
@@ -34,14 +47,31 @@ export const loginController = async (req, res) => {
 
   const session = await loginUser(user._id);
 
-  res.cookie('refreshToken', session.refreshToken, {
-    httpOnly: true,
-    expires: new Date(Date.now() + refreshTokenValidityTime),
-  });
+  setSessionCookies(res, session);
 
   res.json({
     status: 200,
     message: 'Successfully logged in a user!',
     data: { accessToken: session.accessToken },
+  });
+};
+
+export const refreshController = async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  const activeSession = await findSession({ refreshToken });
+  if (!activeSession) throw createHttpError(401, 'Session is not found');
+
+  if (new Date() > activeSession.accessTokenValidUntil)
+    throw createHttpError(401, 'Session token is invalid');
+
+  const newSession = await refreshSession({ refreshToken });
+
+  setSessionCookies(res, newSession);
+
+  res.json({
+    status: 200,
+    message: 'Successfully refreshed a session!',
+    data: { accessToken: newSession.accessToken },
   });
 };

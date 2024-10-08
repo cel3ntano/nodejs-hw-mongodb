@@ -1,4 +1,4 @@
-import { CONTACTS_SORT_BY, SORT_ORDER } from '../constants/index.js';
+import { CONTACTS_SORT_BY, SORT_ORDER } from '../constants/constants.js';
 
 export const parseSortParams = (query) => {
   const sortOrder = Object.values(SORT_ORDER).includes(query.sortOrder)

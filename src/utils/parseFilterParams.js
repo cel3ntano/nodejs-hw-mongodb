@@ -1,4 +1,4 @@
-import { BOOLEANS, CONTACTS_FILTER } from '../constants/index.js';
+import { BOOLEANS, CONTACTS_FILTER } from '../constants/constants.js';
 
 export const parseFilterParams = (query) => {
   const contactType = Object.values(CONTACTS_FILTER.CONTACT_TYPE).includes(

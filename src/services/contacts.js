@@ -1,4 +1,4 @@
-import { CONTACTS_SORT_BY, SORT_ORDER } from '../constants/index.js';
+import { CONTACTS_SORT_BY, SORT_ORDER } from '../constants/constants.js';
 import { Contact } from '../db/models/Contact.js';
 import { createPaginationData } from '../utils/createPaginationData.js';
 

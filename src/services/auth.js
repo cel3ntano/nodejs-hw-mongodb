@@ -8,7 +8,8 @@ import {
 } from '../constants/users-constants.js';
 
 export const findUser = (filter) => User.findOne(filter);
-export const findSession = (accessToken) => Session.findOne({ accessToken });
+export const findSessionByAccessToken = (accessToken) =>
+  Session.findOne({ accessToken });
 
 export const registerUser = async (userRegistrationData) => {
   const { password } = userRegistrationData;

@@ -12,12 +12,16 @@ export const getAllContacts = async ({
   const skip = (page - 1) * perPage;
   const contactsQuery = Contact.find();
 
-  if (filters.contactType) {
-    contactsQuery.where('contactType').equals(filters.contactType);
+  if (filters.userId) {
+    contactsQuery.where('userId').equals(filters.userId);
   }
 
-  if (filters.isFavourite || filters.isFavourite === false) {
-    contactsQuery.where('isFavourite').equals(filters.isFavourite);
+  if (filters.contactType) {
+    contactsQuery.where('contactType').in(filters.contactType);
+  }
+
+  if (filters.isFavourite) {
+    contactsQuery.where('isFavourite').in(filters.isFavourite);
   }
 
   const [totalItems, contacts] = await Promise.all([
@@ -36,14 +40,14 @@ export const getAllContacts = async ({
   };
 };
 
-export const getContactById = (contactId) => Contact.findById(contactId);
+export const getContactById = (filter) => Contact.findOne(filter);
 
-export const deleteContactById = (id) => Contact.findByIdAndDelete(id);
+export const deleteContact = (filter) => Contact.findOneAndDelete(filter);
 
 export const createContact = (contactData) => Contact.create(contactData);
 
-export const updateContact = (id, payload, options = {}) =>
-  Contact.findByIdAndUpdate(id, payload, {
+export const updateContact = (filter, contactData, options = {}) =>
+  Contact.findOneAndUpdate(filter, contactData, {
     new: true,
     includeResultMetadata: true,
     ...options,

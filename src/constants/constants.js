@@ -9,15 +9,7 @@ export const CONTACTS_SORT_BY = {
 };
 
 export const CONTACTS_FILTER = {
-  CONTACT_TYPE: {
-    PERSONAL: 'personal',
-    HOME: 'home',
-    WORK: 'work',
-  },
-  IS_FAVOURITE: 'isFafoutite',
+  CONTACT_TYPES: ['personal', 'home', 'work'],
 };
 
-export const BOOLEANS = {
-  TRUE: 'true',
-  FALSE: 'false',
-};
+export const BOOLEANS = ['true', 'false'];

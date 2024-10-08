@@ -1,5 +1,5 @@
 import createHttpError from 'http-errors';
-import { findSession, findUser } from '../services/auth.js';
+import { findSessionByAccessToken, findUser } from '../services/auth.js';
 
 export const authenticate = async (req, res, next) => {
   const unauthorizedError = 'Access token expired';
@@ -11,13 +11,12 @@ export const authenticate = async (req, res, next) => {
   if (bearer !== 'Bearer' || !token)
     return next(createHttpError(401, unauthorizedError));
 
-  const session = await findSession(token);
+  const session = await findSessionByAccessToken(token);
   if (!session) {
     return next(createHttpError(401, unauthorizedError));
   }
 
-  const isTokenValid = new Date() < new Date(session.accessTokenValidUntil);
-  if (!isTokenValid) {
+  if (new Date() > new Date(session.accessTokenValidUntil)) {
     return next(createHttpError(401, unauthorizedError));
   }
 

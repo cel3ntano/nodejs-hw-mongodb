@@ -6,10 +6,12 @@ import {
   logoutUser,
   refreshSession,
   registerUser,
+  resetPassword,
   sendPasswordResetToken,
 } from '../services/auth.js';
 import bcrypt from 'bcrypt';
 import { refreshTokenValidityTime } from '../constants/users-constants.js';
+import { verifyToken } from '../utils/jwt.js';
 
 const setSessionCookies = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
@@ -99,6 +101,27 @@ export const passwordResetRequestController = async (req, res) => {
   res.json({
     status: 200,
     message: 'Reset password email has been successfully sent.',
+    data: {},
+  });
+};
+
+export const passwordResetController = async (req, res) => {
+  const { token, password } = req.body;
+  const { data, error } = verifyToken(token);
+  if (error) throw createHttpError(401, 'Token is expired or invalid.');
+
+  const userId = data.sub;
+
+  const user = await findUser({ _id: userId });
+  if (!user) throw createHttpError(404, 'User not found!');
+
+  await resetPassword(userId, password);
+  const activeSession = await findSession({ userId });
+  await logoutUser({ _id: activeSession._id });
+
+  res.json({
+    status: 200,
+    message: 'Password has been successfully reset.',
     data: {},
   });
 };

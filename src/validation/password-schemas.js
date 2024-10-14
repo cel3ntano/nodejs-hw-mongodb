@@ -6,6 +6,6 @@ export const passwordResetRequestValidationSchema = Joi.object({
 });
 
 export const passwordResetValidationSchema = Joi.object({
-  email: Joi.string().pattern(emailRegExp).required(),
+  token: Joi.string().required(),
   password: Joi.string().min(6).required(),
 });

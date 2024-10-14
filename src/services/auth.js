@@ -78,3 +78,8 @@ export const sendPasswordResetToken = async (user) => {
 
   return sendEmail(emailData);
 };
+
+export const resetPassword = async (userId, password) => {
+  const hashedPassword = await bcrypt.hash(password, 10);
+  return User.findByIdAndUpdate(userId, { password: hashedPassword });
+};

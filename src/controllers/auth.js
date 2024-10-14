@@ -6,6 +6,7 @@ import {
   logoutUser,
   refreshSession,
   registerUser,
+  sendPasswordResetToken,
 } from '../services/auth.js';
 import bcrypt from 'bcrypt';
 import { refreshTokenValidityTime } from '../constants/users-constants.js';
@@ -78,4 +79,26 @@ export const logoutController = async (req, res) => {
   if (!activeSession) throw createHttpError(401, 'Session is not found');
   await logoutUser({ _id: activeSession._id });
   res.clearCookie('refreshToken').sendStatus(204);
+};
+
+export const passwordResetRequestController = async (req, res) => {
+  const { email } = req.body;
+  const user = await findUser({ email });
+  if (!user) throw createHttpError(404, 'User not found!');
+
+  try {
+    await sendPasswordResetToken(user);
+  } catch (error) {
+    throw createHttpError(
+      500,
+      'Failed to send the email, please try again later.',
+      error,
+    );
+  }
+
+  res.json({
+    status: 200,
+    message: 'Reset password email has been successfully sent.',
+    data: {},
+  });
 };

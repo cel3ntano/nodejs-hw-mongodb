@@ -75,21 +75,25 @@ export const createContactController = async (req, res) => {
 };
 
 export const patchContactController = async (req, res) => {
-  if (Object.keys(req.body).length === 0)
+  if (Object.keys(req.body).length === 0) {
     throw createHttpError(400, 'Please check the provided data');
+  }
 
-  const photo = await uploadImage(req.file, cloudinaryFolder);
   const { contactId } = req.params;
   const { body } = req;
   const { _id: userId } = req.user;
+
+  const contact = await getContactById({ _id: contactId, userId });
+  if (!contact) {
+    throw createHttpError(404, 'Contact not found');
+  }
+
+  const photo = await uploadImage(req.file, cloudinaryFolder, contact.photo);
+
   const updatedContactRawData = await updateContact(
     { _id: contactId, userId },
     { ...body, photo },
   );
-
-  if (!updatedContactRawData.value) {
-    throw createHttpError(404, 'Contact not found');
-  }
 
   res.json({
     status: 200,

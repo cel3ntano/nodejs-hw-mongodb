@@ -62,7 +62,7 @@ export const refreshController = async (req, res) => {
   const activeSession = await findSession({ refreshToken });
   if (!activeSession) throw createHttpError(401, 'Session is not found');
 
-  if (new Date() > activeSession.accessTokenValidUntil)
+  if (new Date() > activeSession.refreshTokenValidUntil)
     throw createHttpError(401, 'Session token is invalid');
 
   const newSession = await refreshSession({ _id: activeSession._id });

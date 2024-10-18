@@ -1,17 +1,9 @@
 import createHttpError from 'http-errors';
-import {
-  findSession,
-  findUser,
-  loginUser,
-  logoutUser,
-  refreshSession,
-  registerUser,
-  resetPassword,
-  sendPasswordResetToken,
-} from '../services/auth.js';
+import * as authServices from '../services/auth.js';
 import bcrypt from 'bcrypt';
 import { refreshTokenValidityTime } from '../constants/users-constants.js';
 import { verifyToken } from '../utils/jwt.js';
+import { generateGoogleOAuthUrl } from '../utils/googleOAuth2.js';
 
 const setSessionCookies = (res, session) => {
   res.cookie('refreshToken', session.refreshToken, {
@@ -22,11 +14,11 @@ const setSessionCookies = (res, session) => {
 
 export const registerController = async (req, res) => {
   const { email } = req.body;
-  const user = await findUser({ email });
+  const user = await authServices.findUser({ email });
   if (user) {
     throw createHttpError(409, 'Email in use');
   }
-  const newUser = await registerUser(req.body);
+  const newUser = await authServices.registerUser(req.body);
   const data = {
     name: newUser.name,
     email: newUser.email,
@@ -41,13 +33,13 @@ export const registerController = async (req, res) => {
 
 export const loginController = async (req, res) => {
   const { email, password } = req.body;
-  const user = await findUser({ email });
+  const user = await authServices.findUser({ email });
   if (!user) throw createHttpError(401, 'Wrong credentials');
 
   const isCorrectPassword = await bcrypt.compare(password, user.password);
   if (!isCorrectPassword) throw createHttpError(401, 'Wrong credentials');
 
-  const session = await loginUser(user._id);
+  const session = await authServices.loginUser(user._id);
   setSessionCookies(res, session);
 
   res.json({
@@ -59,13 +51,15 @@ export const loginController = async (req, res) => {
 
 export const refreshController = async (req, res) => {
   const { refreshToken } = req.cookies;
-  const activeSession = await findSession({ refreshToken });
+  const activeSession = await authServices.findSession({ refreshToken });
   if (!activeSession) throw createHttpError(401, 'Session is not found');
 
   if (new Date() > activeSession.refreshTokenValidUntil)
     throw createHttpError(401, 'Session token is invalid');
 
-  const newSession = await refreshSession({ _id: activeSession._id });
+  const newSession = await authServices.refreshSession({
+    _id: activeSession._id,
+  });
   setSessionCookies(res, newSession);
 
   res.json({
@@ -77,19 +71,19 @@ export const refreshController = async (req, res) => {
 
 export const logoutController = async (req, res) => {
   const { refreshToken } = req.cookies;
-  const activeSession = await findSession({ refreshToken });
+  const activeSession = await authServices.findSession({ refreshToken });
   if (!activeSession) throw createHttpError(401, 'Session is not found');
-  await logoutUser({ _id: activeSession._id });
+  await authServices.logoutUser({ _id: activeSession._id });
   res.clearCookie('refreshToken').sendStatus(204);
 };
 
 export const passwordResetRequestController = async (req, res) => {
   const { email } = req.body;
-  const user = await findUser({ email });
+  const user = await authServices.findUser({ email });
   if (!user) throw createHttpError(404, 'User not found!');
 
   try {
-    await sendPasswordResetToken(user);
+    await authServices.sendPasswordResetToken(user);
   } catch (error) {
     throw createHttpError(
       500,
@@ -112,16 +106,37 @@ export const passwordResetController = async (req, res) => {
 
   const userId = data.sub;
 
-  const user = await findUser({ _id: userId });
+  const user = await authServices.findUser({ _id: userId });
   if (!user) throw createHttpError(404, 'User not found!');
 
-  await resetPassword(userId, password);
-  const activeSession = await findSession({ userId });
-  await logoutUser({ _id: activeSession._id });
+  await authServices.resetPassword(userId, password);
+  const activeSession = await authServices.findSession({ userId });
+  await authServices.logoutUser({ _id: activeSession._id });
 
   res.json({
     status: 200,
     message: 'Password has been successfully reset.',
     data: {},
+  });
+};
+
+export const getGoogleOauthUrlController = (req, res) => {
+  const url = generateGoogleOAuthUrl();
+
+  res.json({
+    status: 200,
+    message: 'Google OAuth link successfully created',
+    data: url,
+  });
+};
+
+export const authenticateGoogleOauthController = async (req, res) => {
+  const session = await authServices.authenticateGoogleOauth(req.body.code);
+  setSessionCookies(res, session);
+
+  res.json({
+    status: 200,
+    message: 'Successfully logged in a user with Google OAuth!',
+    data: { accessToken: session.accessToken },
   });
 };

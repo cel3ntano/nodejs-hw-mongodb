@@ -1,51 +1,48 @@
 import { Router } from 'express';
 import { ctrlWrapper } from '../utils/ctrlWrapper.js';
-import {
-  loginController,
-  logoutController,
-  passwordResetController,
-  passwordResetRequestController,
-  registerController,
-} from '../controllers/auth.js';
 import { validateBody } from '../middlewares/validateBody.js';
-import {
-  userSignInValidationSchema,
-  userSignUpValidationSchema,
-} from '../validation/user-schemas.js';
-import { refreshController } from '../controllers/auth.js';
-import {
-  passwordResetRequestValidationSchema,
-  passwordResetValidationSchema,
-} from '../validation/password-schemas.js';
-
+import * as authControllers from '../controllers/auth.js';
+import * as userSchemas from '../validation/user-schemas.js';
+import * as passwordResetSchemas from '../validation/password-schemas.js';
 const authRouter = Router();
 
 authRouter.post(
   '/register',
-  validateBody(userSignUpValidationSchema),
-  ctrlWrapper(registerController),
+  validateBody(userSchemas.userSignUpValidationSchema),
+  ctrlWrapper(authControllers.registerController),
 );
 
 authRouter.post(
   '/login',
-  validateBody(userSignInValidationSchema),
-  ctrlWrapper(loginController),
+  validateBody(userSchemas.userSignInValidationSchema),
+  ctrlWrapper(authControllers.loginController),
 );
 
-authRouter.post('/refresh', ctrlWrapper(refreshController));
+authRouter.post('/refresh', ctrlWrapper(authControllers.refreshController));
 
-authRouter.post('/logout', ctrlWrapper(logoutController));
+authRouter.post('/logout', ctrlWrapper(authControllers.logoutController));
 
 authRouter.post(
   '/send-reset-email',
-  validateBody(passwordResetRequestValidationSchema),
-  ctrlWrapper(passwordResetRequestController),
+  validateBody(passwordResetSchemas.passwordResetRequestValidationSchema),
+  ctrlWrapper(authControllers.passwordResetRequestController),
 );
 
 authRouter.post(
   '/reset-pwd',
-  validateBody(passwordResetValidationSchema),
-  ctrlWrapper(passwordResetController),
+  validateBody(passwordResetSchemas.passwordResetValidationSchema),
+  ctrlWrapper(authControllers.passwordResetController),
+);
+
+authRouter.get(
+  '/google-oauth-url',
+  ctrlWrapper(authControllers.getGoogleOauthUrlController),
+);
+
+authRouter.post(
+  '/google-oauth-verify',
+  validateBody(userSchemas.userGoogleOauthValidationSchema),
+  ctrlWrapper(authControllers.authenticateGoogleOauthController),
 );
 
 export default authRouter;

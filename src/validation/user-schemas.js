@@ -11,3 +11,7 @@ export const userSignInValidationSchema = Joi.object({
   email: Joi.string().pattern(emailRegExp).required(),
   password: Joi.string().min(6).required(),
 });
+
+export const userGoogleOauthValidationSchema = Joi.object({
+  code: Joi.string().required(),
+});

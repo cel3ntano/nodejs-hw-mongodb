@@ -19,8 +19,8 @@ paths:
   /contact/{id}:
     get:
       $ref: ../swagger/paths/contacts/{id}/get.yaml
-    #patch:
-    #$ref: ../swagger/paths/contacts/patch.yaml
+    patch:
+      $ref: ../swagger/paths/contacts/patch.yaml
     delete:
       $ref: ../swagger/paths/contacts/delete.yaml
   /contacts:

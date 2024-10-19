@@ -16,7 +16,7 @@ servers:
   - url: https://nodejs-hw-mongodb-26m2.onrender.com
   - url: https://contacts-server.zhygalko.dev
 paths:
-  /contact/{id}:
+  /contacts/{id}:
     get:
       $ref: ../swagger/paths/contacts/{id}/get.yaml
     patch:

@@ -6,7 +6,7 @@ import * as path from 'node:path';
 
 const isProduction = env('IS_PRODUCTION') === 'true';
 const clientId = env('GOOGLE_AUTH_CLIENT_ID');
-const clientSecret = env('GOOGLE_AUTH_CLIENT_secret');
+const clientSecret = env('GOOGLE_AUTH_CLIENT_SECRET');
 const oauthConfigPath = path.resolve('google_oauth.json');
 const oauthConfig = JSON.parse(await readFile(oauthConfigPath, 'utf-8'));
 
